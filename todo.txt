@@ -1,0 +1,6 @@
+[ ] klocki
+[ ] paletka
+[ ] piłka
+[ ] sterowanie paletką
+[ ] animacja piłeczki
+[ ] niszczenie obiektów
