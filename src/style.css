@@ -64,6 +64,7 @@ div#board {
     width: 32px; height: 16px;
     background: url(gfx/bricks.png);
     background-position: -8px -128px;
+    transform: translate(-50%, -50%);;
 
     zoom: 2;
     pointer-events: none;;

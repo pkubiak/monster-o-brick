@@ -1,19 +1,22 @@
 class Brick {
     constructor(board, x, y, style) {
-        let brick = document.createElement('div');
-        this.x = x + 16; this.y = y + 8;
-        brick.classList.add('brick');
-        brick.classList.add(`brick-${style}`);
-        brick.style.left = x + 'px';
-        brick.style.top = y + 'px';
-        board.appendChild(brick);
-        this.el = brick;
+        this.el = document.createElement('div');
+        this.el.classList.add('brick');
+        this.el.classList.add(`brick-${style}`);
+        this.setPosition(x, y);
+        board.appendChild(this.el);
     }
     checkTopCollision(x, y, newX, newY) {
         // console.log(newX, newY, this.x, this.y);
         if(newX >= this.x - 16 && newX <= this.x + 16 && newY >= this.y-8 && newY <=this.y+8)
             return true;
         return null;
+    }
+
+    setPosition(x, y) {
+        this.x = x; this.y = y;
+        this.el.style.left = x + 'px';
+        this.el.style.top = y + 'px';
     }
 
     destroy() {
@@ -109,6 +112,9 @@ class Board {
 
     update(duration, timestamp) {
         this.track.moveTo(Math.max(Math.min(this.mouseX, 394), 32), duration);
+        for(let brick of this.bricks) {
+            //brick.y += duration;
+        }
 
         if(this.state == 'HANDLED')
             this.ball.setPosition(this.track.x*0.75, this.track.y*0.75 - 10);
@@ -129,11 +135,11 @@ class Board {
             let col = this.track.topCollision(prevX, prevY, newX, newY);
 
             if(col != null) {
-                // col = Math.pow(Math.abs(col-0.5), 0.25);
-                // console.log(col);
-                // if(col < 0.1 || col > 0.9)
-                //     this.ball.speedX *= 2;
+                this.ball.speedX += 1*(col - 0.5);
                 this.ball.speedY *= -1;
+                let t = Math.sqrt(this.ball.speedX*this.ball.speedX+this.ball.speedY*this.ball.speedY);
+                this.ball.speedX /= t;
+                this.ball.speedY /= t;
             }
 
             for(let brick of this.bricks) {
@@ -174,7 +180,7 @@ class Board {
         for(let y=0;y<4;y++)
             for(let x=0;x<10;x++) {
                 const style = Math.floor(Math.random() * 7);
-                const brick = new Brick(this.el, 32*x, 16*y, style);
+                const brick = new Brick(this.el, 32*x+16, 16*y+8, style);
                 this.bricks.push(brick);
                 // break;
             }
@@ -184,10 +190,7 @@ class Board {
 
 function oninit(){
     console.log('Initializing');
-    let board = new Board('div#board', [
-        ' 11111 ',
-        '2 2 2 2'
-    ]);
+    let board = new Board('div#board');
     let lastTimestamp;
 
     const callback = function(timestamp) {
